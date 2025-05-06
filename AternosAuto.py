@@ -85,7 +85,7 @@ def start():
     log("Password Is : " + password)
     if not os.path.exists(USERDATA_DIR):
         os.makedirs(USERDATA_DIR)
-
+    
     headless = not os.path.exists(DEBUG_FILE)
     if not os.path.exists(PROFILE):
         messagebox.showwarning("Warning", "Copy profile first")
@@ -95,16 +95,20 @@ def start():
             log("Driver Up")
             driver.get("https://aternos.org/go/")
             log("Aternos Reached")
-            sleep(5)
+            sleep(2)
             current_url = str(driver.get_current_url())
             log("Current Url Is : " + current_url)
-            while current_url != "https://aternos.org/go/" or "https://aternos.org/servers/":
+            sleep(2)
+            if current_url != "https://aternos.org/go/" or "https://aternos.org/servers/":
                 log("Please Wait...")
                 sleep(5)
+                driver.get("https://aternos.org/go/")
                 current_url = str(driver.get_current_url())
                 log("Current Url Is : " + current_url)
                 if current_url == "https://aternos.org/go/" or "https://aternos.org/servers/":
-                    break
+                    x = 1
+                else:
+                    driver.get("https://aternos.org/go/")
             if "https://aternos.org/go/" in current_url:
                 log("Logging In")
                 if selected_option in ["Bot", "Login", "Google"]:
@@ -138,34 +142,37 @@ def start():
                 serverselector = "/html/body/div[2]/main/div/div[2]/section/div[1]/div/div[3]/div[2]/div[%s]/div[1]" % server_number
                 driver.click(serverselector)
                 log("Server No.%s Selected" %server_number)
-                sleep(5)
+                sleep(2)
                 x = 1
                 while x == 1:
                     try:
-                        driver.click("/html/body/dialog/main/div[2]/button[1]")  # EULA\
-                        log("EULA Bypassed")
+                        driver.click("/html/body/div[3]/main/section/div[3]/div[5]/div[1]")  # Start
+                        log("D1-1 (Server Started)")
                     except Exception:
-                        log("D1")
-                    sleep(1)
+                        log("D1-2 (Server Launching Or Already Up)")
                     try:
                         driver.click("/html/body/dialog/header/span[2]/i")  # Ad
-                        log("Ad Bypassed")
+                        log("D2-1 (Ad Bypassed)")
                     except Exception:
-                        log("D2")
-                    sleep(1)
+                        log("D2-2 (Continuing...)")
                     try:
                         driver.click("/html/body/dialog/header/span[2]/i")  # Notification
-                        log("Notification Bypassed")
+                        log("D3-1 (Notification Bypassed)")
                     except Exception:
-                        log("D3")
-                    sleep(1)
+                        log("D3-2 (Continuing...)")
                     try:
-                        driver.click("/html/body/div[3]/main/section/div[3]/div[5]/div[1]")  # Start
-                        log("Server Starting")
+                        driver.click("/html/body/dialog/main/div[2]/button[1]")  # EULA\
+                        log("D4-1 (EULA Bypassed)")
                     except Exception:
-                        log("D4 (Server Launching Or Already Up)")
-                        pass
-                    sleep(1)
+                        log("D4-2 (Continuing...)")
+                    try:
+                        driver.click("/html/body/div[3]/main/section/div[3]/div[5]/div[5]")  # Confirm
+                        log("D5-1 (Confirmed Startup)")
+                    except Exception:
+                        if driver.is_element_visible("/html/body/div[3]/main/section/div[3]/div[5]/div[2]"):
+                            log("D5-* (Server Launching, Waiting In Queue, Or Already Up)")
+                        else:
+                            log("D5-2 (Server Launching, Waiting In Queue, Or Already Up)")
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
