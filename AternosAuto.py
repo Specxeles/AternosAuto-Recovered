@@ -33,9 +33,9 @@ def load_selected_option():
             selected_option = f.read().strip()
             log(f"Loaded selected option: {selected_option}")
     else:
-        selected_option = "Login"
+        selected_option = "Bot"
         save_selected_option()
-        log("No option found. Defaulted to Login.")
+        log("No option found. Defaulted to Bot.")
 
     if selected_option == "Login" and os.path.exists(CREDENTIALS_FILE):
         with open(CREDENTIALS_FILE, "r") as f:
@@ -80,16 +80,37 @@ def copy_profile():
     except Exception as e:
         messagebox.showerror("Error", f"Failed to copy profile:\n{e}")
 
+log("Script Directory Is : " + SCRIPT_DIR)
+log("UserData Directory Is : " + USERDATA_DIR)
+log("Profile Directory Is : " + PROFILE)
+log("Option File Directory Is : " + OPTION_FILE)
+log("Saved Login File Directory Is : " + CREDENTIALS_FILE)
+log("Debug Directory Is : " + DEBUG_FILE)
+
 def start():
+    if selected_option == "Bot":
+        username = "BCDBootGuy1"
+        password = "BCDBootGuy123"
+    if selected_option == "Google":
+        username = "Google Login"
+        password = "Google Login"
+    server_number = server_number_entry.get()
+    if server_number == "":
+        server_number = "1"
     log("Username Is : " + username)
     log("Password Is : " + password)
+    log("Server Number Is : " + str(server_number))
     if not os.path.exists(USERDATA_DIR):
         os.makedirs(USERDATA_DIR)
     
     headless = not os.path.exists(DEBUG_FILE)
+    if headless == False:
+        log("Debug File Found.")
+
     if not os.path.exists(PROFILE):
         messagebox.showwarning("Warning", "Copy profile first")
         return
+
     try:
         with Driver(uc=True, headless=headless, user_data_dir=USERDATA_DIR) as driver:
             log("Driver Up")
@@ -99,16 +120,22 @@ def start():
             current_url = str(driver.get_current_url())
             log("Current Url Is : " + current_url)
             sleep(2)
-            if current_url != "https://aternos.org/go/" or "https://aternos.org/servers/":
+            if str(current_url) == "https://aternos.org/go/" or "https://aternos.org/servers/":
+                x = 1
+            else:
                 log("Please Wait...")
-                sleep(5)
+                sleep(3)
                 driver.get("https://aternos.org/go/")
+                sleep(3)
                 current_url = str(driver.get_current_url())
                 log("Current Url Is : " + current_url)
-                if current_url == "https://aternos.org/go/" or "https://aternos.org/servers/":
+                sleep(2)
+                if str(current_url) == "https://aternos.org/go/" or "https://aternos.org/servers/":
                     x = 1
                 else:
+                    log("Please Wait...")
                     driver.get("https://aternos.org/go/")
+                    sleep(3)
             if "https://aternos.org/go/" in current_url:
                 log("Logging In")
                 if selected_option in ["Bot", "Login", "Google"]:
